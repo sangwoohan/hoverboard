@@ -3,6 +3,9 @@
   "description": "Turn one or more of your multi-touch devices into a powerful peripheral with gesture recognition",
   "version": "0.0.1",
   "main": "hoverboard.js",
+  "bin": {
+    "hoverboard": "./bin/hoverboard"
+  },
   "dependencies": {
     "ws": "0.4.25",
     "connect": "2.7.1",
