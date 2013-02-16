@@ -9,6 +9,10 @@ socket.onopen = function() {
   target = document.body;
 
   mousingHandler = function(recognizer){
+    var event;
+
+    event = { type: 'mouseMoved' };
+
     switch(recognizer.state) {
       case 'began':
         console.log('mousing gesture began');
@@ -21,6 +25,8 @@ socket.onopen = function() {
         recognizer.reset();
         break;
     };
+
+    socket.send(JSON.stringify(event));
   };
 
   new PanGestureRecognizer(target, mousingHandler);
