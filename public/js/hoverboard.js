@@ -2,22 +2,26 @@ var socket;
 
 socket = new WebSocket("ws://" + location.host);
 
-function socketOpen() {
-  var mousingRecognizer;
+socket.onopen = function() {
+  var target;
+  var mousingHandler;
 
-  mousingRecognizer = new PanGestureRecognizer();
+  target = document.body;
 
-  function step() {
-    if (mousingRecognizer.state == 'began') {
-      console.log('mousing gesture began');
-    } else if (mousingRecognizer.state == 'changed') {
-      console.log('mousing gesture changed');
-    }
+  mousingHandler = function(recognizer){
+    switch(recognizer.state) {
+      case 'began':
+        console.log('mousing gesture began');
+        break;
+      case 'changed':
+        console.log('mousing gesture changed');
+        break;
+      case 'ended':
+        console.log('mousing gesture ended');
+        recognizer.reset();
+        break;
+    };
+  };
 
-    window.webkitRequestAnimationFrame(step);
-  }
-
-  window.webkitRequestAnimationFrame(step);
-}
-
-socket.onopen = socketOpen;
+  new PanGestureRecognizer(target, mousingHandler);
+};
