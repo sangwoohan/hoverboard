@@ -3,20 +3,21 @@ var socket;
 socket = new WebSocket("ws://" + location.host);
 
 function socketOpen() {
-  var singleClickRecognizer;
+  var mousingRecognizer;
 
-  singleClickRecognizer = new TapRecognizer(document);
+  mousingRecognizer = new PanGestureRecognizer();
 
-  function singleClickStart(recognizer) {
-    console.log('click started');
+  function step() {
+    if (mousingRecognizer.state == 'began') {
+      console.log('mousing gesture began');
+    } else if (mousingRecognizer.state == 'changed') {
+      console.log('mousing gesture changed');
+    }
+
+    window.webkitRequestAnimationFrame(step);
   }
 
-  function singleClickEnd(recognizer) {
-    console.log('click ended');
-  }
-
-  singleClickRecognizer.onStart = singleClickStart;
-  singleClickRecognizer.onEnd = singleClickEnd;
+  window.webkitRequestAnimationFrame(step);
 }
 
 socket.onopen = socketOpen;
