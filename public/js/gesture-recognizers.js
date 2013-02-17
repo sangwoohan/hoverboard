@@ -1,1 +1,0 @@
-/Users/razic/razic/gesture-recognizers/gesture-recognizers.js
