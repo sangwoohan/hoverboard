@@ -2,21 +2,47 @@ var socket;
 
 socket = new WebSocket("ws://" + location.host);
 
-function socketOpen() {
-  var singleClickRecognizer;
+socket.onopen = function() {
+  var target;
+  var mousingHandler;
+  var lastTranslationX;
+  var lastTranslationY;
 
-  singleClickRecognizer = new TapRecognizer(document);
+  target = document.body;
 
-  function singleClickStart(recognizer) {
-    console.log('click started');
-  }
+  mousingHandler = function(recognizer){
+    var event;
+    var translationX;
+    var translationY;
 
-  function singleClickEnd(recognizer) {
-    console.log('click ended');
-  }
+    translationX = recognizer.translationX;
+    translationY = recognizer.translationY;
 
-  singleClickRecognizer.onStart = singleClickStart;
-  singleClickRecognizer.onEnd = singleClickEnd;
-}
+    event = {
+      type: 'mouseMoved',
+      deltaTranslationX: 0,
+      deltaTranslationY: 0
+    };
 
-socket.onopen = socketOpen;
+    switch(recognizer.state) {
+      case 'began':
+        break;
+      case 'changed':
+        event.deltaTranslationX = translationX - lastTranslationX;
+        event.deltaTranslationY = translationY - lastTranslationY;
+
+        break;
+      case 'ended':
+        recognizer.reset();
+
+        break;
+    };
+
+    lastTranslationX = translationX;
+    lastTranslationY = translationY;
+
+    socket.send(JSON.stringify(event));
+  };
+
+  new PanGestureRecognizer(target, mousingHandler);
+};
