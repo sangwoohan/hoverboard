@@ -14,22 +14,22 @@ socket.onopen = function() {
     var event;
     var translationX;
     var translationY;
-
-    translationX = recognizer.translationX;
-    translationY = recognizer.translationY;
-
-    event = {
-      type: 'mouseMoved',
-      deltaTranslationX: 0,
-      deltaTranslationY: 0
-    };
+    var velocity;
 
     switch(recognizer.state) {
       case 'began':
-        break;
       case 'changed':
-        event.deltaTranslationX = translationX - lastTranslationX;
-        event.deltaTranslationY = translationY - lastTranslationY;
+        velocity = recognizer.velocity;
+        translationX = recognizer.translationX * velocity;
+        translationY = recognizer.translationY * velocity;
+
+        event = {};
+        event.type = 'mouseMoved';
+        event.translationX = translationX;
+        event.translationY = translationY;
+
+        recognizer.setTranslation(0, 0);
+        socket.send(JSON.stringify(event));
 
         break;
       case 'ended':
@@ -37,11 +37,6 @@ socket.onopen = function() {
 
         break;
     };
-
-    lastTranslationX = translationX;
-    lastTranslationY = translationY;
-
-    socket.send(JSON.stringify(event));
   };
 
   new PanGestureRecognizer(target, mousingHandler);
