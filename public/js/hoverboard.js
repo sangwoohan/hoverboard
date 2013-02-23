@@ -5,10 +5,14 @@ socket = new WebSocket("ws://" + location.host);
 socket.onopen = function() {
   var target;
   var mousingHandler;
+  var lastRecordedTime;
   var lastTranslationX;
   var lastTranslationY;
+  var mouseSensivity;
+  var mouseSpeed;
 
   target = document.body;
+  mouseSensivity = 5;
 
   mousingHandler = function(recognizer){
     var event;
