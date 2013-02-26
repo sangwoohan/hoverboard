@@ -14,7 +14,7 @@ socket.onopen = function() {
   target = document.body;
   mouseSensivity = 5;
 
-  mousingHandler = function(recognizer){
+  mousingHandler = function(recognizer) {
     var event;
     var translationX;
     var translationY;
@@ -43,5 +43,17 @@ socket.onopen = function() {
     };
   };
 
+  singleClickHandler = function(recognizer) {
+    var event;
+
+    switch(recognizer.state) {
+      case 'recognized':
+        break;
+      case 'ended':
+        break;
+    }
+  }
+
   new PanGestureRecognizer(target, mousingHandler);
+  new TapGestureRecognizer(target, singleClickHandler);
 };
