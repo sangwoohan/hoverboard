@@ -3,45 +3,24 @@ var socket;
 socket = new WebSocket("ws://" + location.host);
 
 socket.onopen = function() {
-  var target;
-  var mousingHandler;
-  var lastRecordedTime;
-  var lastTranslationX;
-  var lastTranslationY;
-  var mouseSensivity;
-  var mouseSpeed;
+  var panRecognizer;
 
-  target = document.body;
-  mouseSensivity = 5;
-
-  mousingHandler = function(recognizer){
+  panRecognizer = gestureRecognizers.Pan(this, function(recognizer) {
     var event;
-    var translationX;
-    var translationY;
-    var velocity;
 
-    switch(recognizer.state) {
-      case 'began':
-      case 'changed':
-        velocity = recognizer.velocity;
-        translationX = recognizer.translationX * velocity;
-        translationY = recognizer.translationY * velocity;
+    if (
+      recognizer.state == gestureRecognizers.states.began ||
+      recognizer.state == gestureRecognizers.states.changed
+    ) {
 
-        event = {};
-        event.type = 'mouseMoved';
-        event.translationX = translationX;
-        event.translationY = translationY;
+      event = { type: 'mouseMoved' };
+      event.translationX = recognizer.translationX * recognizer.velocityX;
+      event.translationY = recognizer.translationY * recognizer.velocityY;
 
-        recognizer.setTranslation(0, 0);
-        socket.send(JSON.stringify(event));
+      recognizer.setTranslation(0, 0);
+      socket.send(JSON.stringify(event));
+    }
+  });
 
-        break;
-      case 'ended':
-        recognizer.reset();
-
-        break;
-    };
-  };
-
-  new PanGestureRecognizer(target, mousingHandler);
+  gestureRecognizers.add(document.body, panRecognizer);
 };
