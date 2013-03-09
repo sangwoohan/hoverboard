@@ -6,7 +6,7 @@ socket.onopen = function() {
   var panRecognizer;
 
   panRecognizer = gestureRecognizers.Pan(this, function(recognizer) {
-    var event, velocityX, velocityY;
+    var event;
 
     if (
       recognizer.state == gestureRecognizers.states.began ||
