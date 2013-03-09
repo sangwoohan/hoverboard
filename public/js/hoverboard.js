@@ -3,57 +3,24 @@ var socket;
 socket = new WebSocket("ws://" + location.host);
 
 socket.onopen = function() {
-  var target;
-  var mousingHandler;
-  var lastRecordedTime;
-  var lastTranslationX;
-  var lastTranslationY;
-  var mouseSensivity;
-  var mouseSpeed;
+  var panRecognizer;
 
-  target = document.body;
-  mouseSensivity = 5;
+  panRecognizer = gestureRecognizers.Pan(this, function(recognizer) {
+    var event, velocityX, velocityY;
 
-  mousingHandler = function(recognizer) {
-    var event;
-    var translationX;
-    var translationY;
-    var velocity;
+    if (
+      recognizer.state == gestureRecognizers.states.began ||
+      recognizer.state == gestureRecognizers.states.changed
+    ) {
 
-    switch(recognizer.state) {
-      case 'began':
-      case 'changed':
-        velocity = recognizer.velocity;
-        translationX = recognizer.translationX * velocity;
-        translationY = recognizer.translationY * velocity;
+      event = { type: 'mouseMoved' };
+      event.translationX = recognizer.translationX * recognizer.velocityX;
+      event.translationY = recognizer.translationY * recognizer.velocityY;
 
-        event = {};
-        event.type = 'mouseMoved';
-        event.translationX = translationX;
-        event.translationY = translationY;
-
-        recognizer.setTranslation(0, 0);
-        socket.send(JSON.stringify(event));
-
-        break;
-      case 'ended':
-        recognizer.reset();
-
-        break;
-    };
-  };
-
-  singleClickHandler = function(recognizer) {
-    var event;
-
-    switch(recognizer.state) {
-      case 'recognized':
-        break;
-      case 'ended':
-        break;
+      recognizer.setTranslation(0, 0);
+      socket.send(JSON.stringify(event));
     }
-  }
+  });
 
-  new PanGestureRecognizer(target, mousingHandler);
-  new TapGestureRecognizer(target, singleClickHandler);
+  gestureRecognizers.add(document.body, panRecognizer);
 };
